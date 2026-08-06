@@ -3,6 +3,7 @@ from typing import *
 import logging
 import time
 
+from database import Hdf5Client
 from utils import *
 from exchanges.binance import BinanceClient
 
@@ -11,7 +12,18 @@ logger = logging.getLogger()
 
 def collect_all(client: Union[BinanceClient], exchange: str, symbol: str):
 
-    oldest_ts, most_recent_ts = None, None
+    # instatiate the db
+    h5_db = Hdf5Client(exchange)
+    h5_db.create_dataset(symbol)
+
+    # TESTING DATA RETRIEVAL FUNCTION ONLY!
+    # data = h5_db.get_data(symbol, from_time=0, to_time=int(time.time() * 1000))
+    # data = resample_timeframe(data, "15m")
+    # print(data)
+    # return
+
+    oldest_ts, most_recent_ts = h5_db.get_fitst_last_timestamp(symbol)
+    print(oldest_ts, most_recent_ts)
 
     # Initial request
 
@@ -38,10 +50,13 @@ def collect_all(client: Union[BinanceClient], exchange: str, symbol: str):
             )
 
             # insert data to the database
+            h5_db.write_data(symbol, data)
 
             # now update the oldestand most recent timestamps
             oldest_ts = data[0][0]
             most_recent_ts = data[-1][0]
+
+    data_to_insert = []
 
     # Most recent data
 
@@ -58,6 +73,14 @@ def collect_all(client: Union[BinanceClient], exchange: str, symbol: str):
             break
 
         data = data[:-1]  # remove the current candle stick
+
+        # add to the data to insert
+        data_to_insert = data_to_insert + data
+
+        if len(data_to_insert) > 10000:
+            # write the data to disk and clear the list
+            h5_db.write_data(symbol, data_to_insert)
+            data_to_insert.clear()
 
         if data[-1][0] > most_recent_ts:
             most_recent_ts = data[-1][0]
@@ -78,6 +101,10 @@ def collect_all(client: Union[BinanceClient], exchange: str, symbol: str):
         # pause a little to avoid hitting the rate limit
         time.sleep(1.1)
 
+    # write the data to disk and clear the list
+    h5_db.write_data(symbol, data_to_insert)
+    data_to_insert.clear()
+
     # Older data
 
     while True:
@@ -95,6 +122,14 @@ def collect_all(client: Union[BinanceClient], exchange: str, symbol: str):
                 ms_to_dt(oldest_ts),
             )
             break
+
+        # add to the data to insert
+        data_to_insert = data_to_insert + data
+
+        if len(data_to_insert) > 10000:
+            # write the data to disk and clear the list
+            h5_db.write_data(symbol, data_to_insert)
+            data_to_insert.clear()
 
         if data[0][0] < oldest_ts:
             oldest_ts = data[0][0]
@@ -114,3 +149,7 @@ def collect_all(client: Union[BinanceClient], exchange: str, symbol: str):
 
         # pause a little to avoid hitting the rate limit
         time.sleep(1.1)
+
+    # write the data to disk and clear the list
+    h5_db.write_data(symbol, data_to_insert)
+    data_to_insert.clear()
