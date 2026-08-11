@@ -1,7 +1,10 @@
 import logging
+import backtester
+import datetime
 
 from exchanges.binance import BinanceClient
 from data_collector import collect_all
+from utils import TF_EQUIV
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -50,3 +53,60 @@ if __name__ == "__main__":  # only execute if main file executed
 
     if mode == "data":
         collect_all(client, exchange, symbol)
+
+    elif mode == "backtest":
+
+        ## Strategy
+        available_strategies = ["obv"]
+
+        while True:
+            strategy = input(
+                f"Choose a strategy ({', '.join(available_strategies)}): "
+            ).lower()
+
+            if strategy in available_strategies:
+                break
+
+        ## Timeframe
+        while True:
+            timeframe = input(
+                f"Choose a timeframe ({', '.join(TF_EQUIV.keys())}): "
+            ).lower()
+
+            if timeframe in TF_EQUIV.keys():
+                break
+
+        ## From time
+        while True:
+            from_time = input(f"Backtest from (yyyy-mm-dd) or Press Enter: ").lower()
+            if from_time == "":
+                from_time = 0
+                break
+
+            try:
+                # from datetime we get a datetime object we converted to a timestamp
+                # then we get milliseconds
+                from_time = int(
+                    datetime.datetime.strptime(from_time, "%Y-%m-%d").timestamp() * 1000
+                )
+                break
+            except ValueError:
+                continue
+
+        ## to time
+        while True:
+            to_time = input(f"Backtest to (yyyy-mm-dd) or Press Enter: ").lower()
+            # use current time if empty
+            if to_time == "":
+                to_time = int(datetime.datetime.now().timestamp() * 1000)
+                break
+
+            try:
+                to_time = int(
+                    datetime.datetime.strptime(to_time, "%Y-%m-%d").timestamp() * 1000
+                )
+                break
+            except ValueError:
+                continue
+
+        backtester.run(exchange, symbol, strategy, timeframe, from_time, to_time)
