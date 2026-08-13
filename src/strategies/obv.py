@@ -24,5 +24,10 @@ def backtest(df: pd.DataFrame, ma_period: int):
     # to calculate the PNL, here we will use the percentage
     # change in the close prices
     df["pnl"] = df["close"].pct_change() * df["signal"].shift(1)
+
+    df["cum_pnl"] = df["pnl"].cumsum()
+    df["max_cum_pnl"] = df["cum_pnl"].cummax()
+    df["drawndown"] = df["max_cum_pnl"] - df["cum_pnl"]
+
     # print(df)
-    return df["pnl"].sum()
+    return df["pnl"].sum(), df["drawdown"].max()
