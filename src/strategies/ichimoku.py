@@ -83,4 +83,8 @@ def backtest(df: pd.DataFrame, tenkan_period: int, kijun_period: int):
         "signal"
     ].shift(1)
 
-    return signal_data["pnl"].sum()
+    df["cum_pnl"] = df["pnl"].cumsum()
+    df["max_cum_pnl"] = df["cum_pnl"].cummax()
+    df["drawndown"] = df["max_cum_pnl"] - df["cum_pnl"]
+
+    return signal_data["pnl"].sum(), df["drawdown"].max()

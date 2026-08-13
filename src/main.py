@@ -57,7 +57,7 @@ if __name__ == "__main__":  # only execute if main file executed
     elif mode == "backtest":
 
         ## Strategy
-        available_strategies = ["obv", "ichimoku"]
+        available_strategies = ["obv", "ichimoku", "sup_res"]
 
         while True:
             strategy = input(
@@ -109,4 +109,4 @@ if __name__ == "__main__":  # only execute if main file executed
             except ValueError:
                 continue
 
-        backtester.run(exchange, symbol, strategy, timeframe, from_time, to_time)
+        print(backtester.run(exchange, symbol, strategy, timeframe, from_time, to_time))
