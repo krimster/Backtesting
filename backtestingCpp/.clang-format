@@ -1,0 +1,35 @@
+# Format Style Options - Created with Clang Power Tools
+---
+BasedOnStyle: WebKit
+AlignConsecutiveMacros: true
+AlignConsecutiveAssignments: AcrossEmptyLines
+AlignConsecutiveDeclarations: true
+BraceWrapping: 
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  BeforeWhile: true
+BreakBeforeBraces: Allman
+NamespaceIndentation: All
+FixNamespaceComments: true
+
+IncludeBlocks:   Regroup
+IncludeCategories:
+  - Regex:          '"(.+[\\\/])?enginepch\.h"'
+    Priority:       1
+  - Regex:          '^<.*\..*>'
+    Priority:       3
+  - Regex:          '^<.*'
+    Priority:       2
+  - Regex:          '^.*'
+    Priority:       4  
+...
