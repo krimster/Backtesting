@@ -1,3 +1,6 @@
+#ifndef DATABASE_H
+#define DATABASE_H
+
 #include <string>
 
 #include <H5Ipublic.h>
@@ -9,10 +12,12 @@ public:
 
     void close_file();
 
-    double** get_data(const std::string& symbol, const std::string& exchange);
+    double** get_data(const std::string& symbol, const std::string& exchange, int& array_size);
 
 private:
     hid_t h5_file_;
 };
 
 int compare(const void* pa, const void* pb);
+
+#endif

@@ -29,7 +29,7 @@ database::database(const std::string& file_name)
     }
 }
 
-double** database::get_data(const std::string& symbol, const std::string& exchange)
+double** database::get_data(const std::string& symbol, const std::string& exchange, int& array_size)
 {
     double** results = { };
 
@@ -48,7 +48,10 @@ double** database::get_data(const std::string& symbol, const std::string& exchan
 
     H5Sget_simple_extent_dims(data_space, dims, nullptr);
 
-    results = new double*[dims[0]];
+    // update array size
+    array_size = int(dims[0]);
+
+    results    = new double*[dims[0]];
 
     for (size_t i = 0; i < dims[0]; ++i)
     {
