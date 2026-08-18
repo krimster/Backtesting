@@ -11,7 +11,12 @@ std::tuple<
     std::vector<double>,
     std::vector<double>,
     std::vector<double>>
-rearrange_candles(double** candles, const std::string& timeframe, int array_size)
+rearrange_candles(
+    double**           candles,
+    const std::string& timeframe,
+    long long          from_time,
+    long long          to_time,
+    int                array_size)
 {
     std::vector<double> ts, open, high, low, close, volume;
     double              tf_ms;
@@ -34,17 +39,35 @@ rearrange_candles(double** candles, const std::string& timeframe, int array_size
     }
 
     // fmod() calculates the remainder of a division
-    double current_ts = candles[0][0] - std::fmod(candles[0][0], tf_ms);
-    double current_o  = candles[0][1];
-    double current_h  = candles[0][2];
-    double current_l  = candles[0][3];
-    double current_c  = candles[0][4];
-    double current_v  = candles[0][5];
+    double current_ts = 0.0;
+    double current_o;
+    double current_h;
+    double current_l;
+    double current_c;
+    double current_v;
 
-    // we the loop at 1 instead of zero so that we use the first
-    // candle as comparison
-    for (int i = 1; i < array_size; i++)
+    for (int i = 0; i < array_size; i++)
     {
+
+        if (candles[i][0] < from_time)
+        {
+            continue;
+        }
+        else if (current_ts == 0.0)
+        {
+            current_ts = candles[i][0] - std::fmod(candles[0][0], tf_ms);
+            current_o  = candles[i][1];
+            current_h  = candles[i][2];
+            current_l  = candles[i][3];
+            current_c  = candles[i][4];
+            current_v  = candles[i][5];
+        }
+
+        if (candles[i][0] > to_time)
+        {
+            break;
+        }
+
         if (candles[i][0] >= current_ts + tf_ms)
         {
             // case: adding a candle
