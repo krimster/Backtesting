@@ -83,8 +83,8 @@ rearrange_candles(
 
             if (missing_candles > 0)
             {
-                printf("Missing %i candle(s) from %f\n", missing_candles, current_ts);
-                std::cout << "Missing " << missing_candles << " candle(s) from " << current_ts << "\n";
+                // printf("Missing %i candle(s) from %f\n", missing_candles, current_ts);
+                // std::cout << "Missing " << missing_candles << " candle(s) from " << current_ts << "\n";
 
                 for (int u = 0; u < missing_candles; u++)
                 {

@@ -11,7 +11,7 @@ find_package(HDF5 REQUIRED COMPONENTS C)
 
 include_directories((${HDF5_INCLUDE-DIRS}))
 
-set(SOURCE_FILES main.cpp Database.cpp utils.cpp strategies/sma.cpp)
+set(SOURCE_FILES main.cpp Database.cpp utils.cpp strategies/sma.cpp strategies/psar.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

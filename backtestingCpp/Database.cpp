@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <cstdlib>
+#include <filesystem>
 
 #include <H5Dpublic.h>
 #include <H5Fpublic.h>
@@ -13,6 +14,8 @@
 
 database::database(const std::string& file_name)
 {
+    printf("Current working directory: %s", std::filesystem::current_path().c_str());
+
     const auto FILE_NAME = "../../data/" + file_name + ".h5";
     printf("Opening %s\n", FILE_NAME.c_str());
 
