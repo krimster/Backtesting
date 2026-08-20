@@ -1,3 +1,4 @@
+from ctypes import *
 from database import Hdf5Client
 from utils import resample_timeframe, STRAT_PARAMS
 
@@ -59,4 +60,68 @@ def run(
             take_profit=params["take_profit"],
             stop_loss=params["stop_loss"],
         )
+
         return pnl, max_drawdown
+
+    elif strategy == "sma":
+
+        ## load C++ library
+        lib = CDLL("backtestingCpp/build/libbacktestingCpp.so", winmode=0)
+        lib.sma_new.restype = c_void_p
+        lib.sma_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong]
+
+        lib.sma_execute_backtest.restype = c_void_p
+        lib.sma_execute_backtest.argtypes = [c_void_p, c_int, c_int]
+
+        lib.sma_get_pnl.restype = c_double
+        lib.sma_get_pnl.argtypes = [c_void_p]
+
+        lib.sma_get_max_dd.restype = c_double
+        lib.sma_get_max_dd.argtypes = [c_void_p]
+
+        obj = lib.sma_new(
+            exchange.encode(),
+            symbol.encode(),
+            tf.encode(),
+            from_time,
+            to_time,
+        )
+
+        lib.sma_execute_backtest(obj, params["slow_ma"], params["fast_ma"])
+        pnl = sma_get_pnl(obj)
+        max_dd = sma_get_max_dd(obj)
+
+        return pnl, max_dd
+
+    elif strategy == "psar":
+
+        ## load C++ library
+        lib = CDLL("backtestingCpp/build/libbacktestingCpp.so", winmode=0)
+        lib.psar_new.restype = c_void_p
+        lib.psar_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong]
+
+        lib.psar_execute_backtest.restype = c_void_p
+        lib.psar_execute_backtest.argtypes = [c_void_p, c_double, c_double, c_double]
+
+        lib.psar_get_pnl.restype = c_double
+        lib.psar_get_pnl.argtypes = [c_void_p]
+
+        lib.psar_get_max_dd.restype = c_double
+        lib.psar_get_max_dd.argtypes = [c_void_p]
+
+        obj = lib.psar_new(
+            exchange.encode(),
+            symbol.encode(),
+            tf.encode(),
+            from_time,
+            to_time,
+        )
+
+        lib.psar_execute_backtest(
+            obj, params["initial_acc"], params["acc_increment"], params["max_acc"]
+        )
+
+        pnl = psar_get_pnl(obj)
+        max_dd = psar_get_max_dd(obj)
+
+        return pnl, max_dd

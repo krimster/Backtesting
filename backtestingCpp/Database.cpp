@@ -16,7 +16,7 @@ database::database(const std::string& file_name)
 {
     printf("Current working directory: %s", std::filesystem::current_path().c_str());
 
-    const auto FILE_NAME = "../../data/" + file_name + ".h5";
+    auto FILE_NAME = "../../data/" + file_name + ".h5";
     printf("Opening %s\n", FILE_NAME.c_str());
 
     hid_t fapl    = H5Pcreate(H5P_FILE_ACCESS);
@@ -28,7 +28,12 @@ database::database(const std::string& file_name)
 
     if (h5_file_ < 0)
     {
-        printf("Error while opening %s\n", FILE_NAME.c_str());
+        FILE_NAME = "data/" + file_name + ".h5";
+        h5_file_  = H5Fopen(FILE_NAME.c_str(), H5F_ACC_RDONLY, fapl);
+        if (h5_file_ < 0)
+        {
+            printf("Error while opening %s\n", FILE_NAME.c_str());
+        }
     }
 }
 

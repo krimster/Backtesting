@@ -12,6 +12,9 @@ namespace stg
 
         void execute_backtest(int slow_ma, int fast_ma);
 
+        [[nodiscard]] double get_pnl() const;
+        [[nodiscard]] double get_max_dd() const;
+
     private:
         std::string exchange;
         std::string symbol;

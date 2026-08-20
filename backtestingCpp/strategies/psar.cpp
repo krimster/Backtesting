@@ -164,3 +164,37 @@ namespace stg
         } // end for loop
     }
 } // namespace stg
+
+// C interface between python and C++
+
+// fo Mac and Linux we use extern C
+// for Windows we use the macro below
+// #define DLLEXPORT extern "C" __declspec(dllexport)
+// and before every function we add DLLEXPORT
+// ex:
+// DLLEXPORT stg::psar* psar_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time)
+
+extern "C"
+{
+
+    stg::psar* psar_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time)
+    {
+        return new stg::psar(exchange, symbol, timeframe, from_time, to_time);
+    }
+
+    void psar_execute_backtest(stg::psar* psar, double initial_acc, double acc_increment, double max_acc)
+    {
+        psar->execute_backtest(initial_acc, acc_increment, max_acc);
+        printf("%f | %f\n", psar->get_pnl(), psar->get_max_dd());
+    }
+
+    double psar_get_pnl(stg::psar* psar)
+    {
+        return psar->get_pnl();
+    }
+
+    double psar_get_max_dd(stg::psar* psar)
+    {
+        return psar->get_max_dd();
+    }
+}

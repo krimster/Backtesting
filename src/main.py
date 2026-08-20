@@ -57,7 +57,7 @@ if __name__ == "__main__":  # only execute if main file executed
     elif mode == "backtest":
 
         ## Strategy
-        available_strategies = ["obv", "ichimoku", "sup_res"]
+        available_strategies = ["obv", "ichimoku", "sup_res", "sma", "psar"]
 
         while True:
             strategy = input(

@@ -24,6 +24,15 @@ namespace stg
         std::tie(ts, open, high, low, close, volume) = rearrange_candles(res, timeframe, from_time, to_time, array_size);
     }
 
+    double sma::get_pnl() const
+    {
+        return pnl;
+    }
+    double sma::get_max_dd() const
+    {
+        return max_dd;
+    }
+
     void sma::execute_backtest(int slow_ma, int fast_ma)
     {
         pnl                                = 0.0;
@@ -97,3 +106,27 @@ namespace stg
     }
 
 } // namespace stg
+
+extern "C"
+{
+    stg::sma* sma_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time)
+    {
+        return new stg::sma(exchange, symbol, timeframe, from_time, to_time);
+    }
+
+    void sma_execute_backtest(stg::sma* sma, int slow_ma, int fast_ma)
+    {
+        sma->execute_backtest(slow_ma, fast_ma);
+        printf("%f | %f\n", sma->get_pnl(), sma->get_max_dd());
+    }
+
+    double sma_get_pnl(stg::sma* sma)
+    {
+        return sma->get_pnl();
+    }
+
+    double sma_get_max_dd(stg::sma* sma)
+    {
+        return sma->get_max_dd();
+    }
+}

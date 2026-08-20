@@ -15,15 +15,15 @@ namespace stg
         [[nodiscard]] double get_pnl() const;
         [[nodiscard]] double get_max_dd() const;
 
+        double pnl    = 0.0;
+        double max_dd = 0.0;
+
     private:
         std::string exchange;
         std::string symbol;
         std::string timeframe;
 
         std::vector<double> ts, open, high, low, close, volume;
-
-        double pnl    = 0.0;
-        double max_dd = 0.0;
     };
 
 } // namespace stg

@@ -28,6 +28,15 @@ STRAT_PARAMS = {
         "take_profit": {"name": "Take profit", "type": float},
         "stop_loss": {"name": "Stop loss", "type": float},
     },
+    "sma": {
+        "slow_ma": {"name": "Slow MA Period", "type": int},
+        "fast_ma": {"name": "Fast MA Period", "type": int},
+    },
+    "psar": {
+        "initial_acc": {"name": "Initial Acceleration", "type": float},
+        "acc_increment": {"name": "Acceleration Increment", "type": float},
+        "max_acc": {"name": "Maximum Acceleration", "type": float},
+    },
 }
 
 

@@ -13,9 +13,11 @@ include_directories((${HDF5_INCLUDE-DIRS}))
 
 set(SOURCE_FILES main.cpp Database.cpp utils.cpp strategies/sma.cpp strategies/psar.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+#add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-# target_link_libraries(${PROJECT_NAME} PRIVATE HDF5::HDF5)
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+
+##target_link_libraries(${PROJECT_NAME} PRIVATE HDF5::HDF5)
 target_link_libraries(${PROJECT_NAME} ${HDF5_LIBRARIES} ${HDF5_C_LIBRARIES})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
