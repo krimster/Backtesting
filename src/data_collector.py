@@ -1,5 +1,4 @@
-from typing import *
-
+import typing
 import logging
 import time
 
@@ -10,7 +9,7 @@ from exchanges.binance import BinanceClient
 logger = logging.getLogger()
 
 
-def collect_all(client: Union[BinanceClient], exchange: str, symbol: str):
+def collect_all(client: typing.Union[BinanceClient], exchange: str, symbol: str):
 
     # instatiate the db
     h5_db = Hdf5Client(exchange)

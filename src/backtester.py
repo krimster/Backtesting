@@ -1,6 +1,6 @@
 from ctypes import *
 from database import Hdf5Client
-from utils import resample_timeframe, STRAT_PARAMS
+from utils import resample_timeframe, STRAT_PARAMS, get_library
 
 import strategies.obv
 import strategies.ichimoku
@@ -66,18 +66,7 @@ def run(
     elif strategy == "sma":
 
         ## load C++ library
-        lib = CDLL("backtestingCpp/build/libbacktestingCpp.so", winmode=0)
-        lib.sma_new.restype = c_void_p
-        lib.sma_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong]
-
-        lib.sma_execute_backtest.restype = c_void_p
-        lib.sma_execute_backtest.argtypes = [c_void_p, c_int, c_int]
-
-        lib.sma_get_pnl.restype = c_double
-        lib.sma_get_pnl.argtypes = [c_void_p]
-
-        lib.sma_get_max_dd.restype = c_double
-        lib.sma_get_max_dd.argtypes = [c_void_p]
+        lib = get_library()
 
         obj = lib.sma_new(
             exchange.encode(),
@@ -96,18 +85,7 @@ def run(
     elif strategy == "psar":
 
         ## load C++ library
-        lib = CDLL("backtestingCpp/build/libbacktestingCpp.so", winmode=0)
-        lib.psar_new.restype = c_void_p
-        lib.psar_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong]
-
-        lib.psar_execute_backtest.restype = c_void_p
-        lib.psar_execute_backtest.argtypes = [c_void_p, c_double, c_double, c_double]
-
-        lib.psar_get_pnl.restype = c_double
-        lib.psar_get_pnl.argtypes = [c_void_p]
-
-        lib.psar_get_max_dd.restype = c_double
-        lib.psar_get_max_dd.argtypes = [c_void_p]
+        lib = get_library()
 
         obj = lib.psar_new(
             exchange.encode(),

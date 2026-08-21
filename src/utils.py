@@ -1,6 +1,8 @@
 import datetime
 import pandas as pd
 
+from ctypes import *
+
 
 TF_EQUIV = {
     "1m": "1Min",
@@ -54,3 +56,37 @@ def resample_timeframe(data: pd.DataFrame, tf: str) -> pd.DataFrame:
             "volume": "sum",
         }
     )
+
+
+## load C++ library
+def get_library():
+
+    lib = CDLL("backtestingCpp/build/libbacktestingCpp.so", winmode=0)
+
+    # SMA
+    lib.sma_new.restype = c_void_p
+    lib.sma_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong]
+
+    lib.sma_execute_backtest.restype = c_void_p
+    lib.sma_execute_backtest.argtypes = [c_void_p, c_int, c_int]
+
+    lib.sma_get_pnl.restype = c_double
+    lib.sma_get_pnl.argtypes = [c_void_p]
+
+    lib.sma_get_max_dd.restype = c_double
+    lib.sma_get_max_dd.argtypes = [c_void_p]
+
+    # PSAR
+    lib.psar_new.restype = c_void_p
+    lib.psar_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong]
+
+    lib.psar_execute_backtest.restype = c_void_p
+    lib.psar_execute_backtest.argtypes = [c_void_p, c_double, c_double, c_double]
+
+    lib.psar_get_pnl.restype = c_double
+    lib.psar_get_pnl.argtypes = [c_void_p]
+
+    lib.psar_get_max_dd.restype = c_double
+    lib.psar_get_max_dd.argtypes = [c_void_p]
+
+    return lib

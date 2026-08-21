@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
+#include <string>
 
 #include <H5Dpublic.h>
 #include <H5Fpublic.h>
@@ -12,11 +13,30 @@
 #include <H5Tpublic.h>
 #include <H5public.h>
 
+namespace fs = std::filesystem;
+
 database::database(const std::string& file_name)
 {
-    printf("Current working directory: %s", std::filesystem::current_path().c_str());
 
-    auto FILE_NAME = "../../data/" + file_name + ".h5";
+    const std::string file_name_1 = "../../data/" + file_name + ".h5";
+    const std::string file_name_2 = "data/" + file_name + ".h5";
+
+    std::string FILE_NAME;
+
+    if (fs::exists(file_name_1))
+    {
+        FILE_NAME = file_name_1;
+    }
+    else if (fs::exists(file_name_2))
+    {
+        FILE_NAME = file_name_2;
+    }
+    else
+    {
+        printf("Could not find HDF5 file: %s\n", file_name.c_str());
+        return;
+    }
+
     printf("Opening %s\n", FILE_NAME.c_str());
 
     hid_t fapl    = H5Pcreate(H5P_FILE_ACCESS);
@@ -28,12 +48,7 @@ database::database(const std::string& file_name)
 
     if (h5_file_ < 0)
     {
-        FILE_NAME = "data/" + file_name + ".h5";
-        h5_file_  = H5Fopen(FILE_NAME.c_str(), H5F_ACC_RDONLY, fapl);
-        if (h5_file_ < 0)
-        {
-            printf("Error while opening %s\n", FILE_NAME.c_str());
-        }
+        printf("Error while opening %s\n", FILE_NAME.c_str());
     }
 }
 
@@ -89,7 +104,7 @@ double** database::get_data(const std::string& symbol, const std::string& exchan
     qsort(results, dims[0], sizeof(results[0]), compare);
 
     H5Sclose(data_space);
-    H5Sclose(dataset);
+    H5Dclose(dataset);
 
     const auto end_ts  = std::chrono::high_resolution_clock::now();
 

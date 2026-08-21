@@ -1,6 +1,7 @@
 import logging
 import backtester
 import datetime
+import optimizer
 
 from exchanges.binance import BinanceClient
 from data_collector import collect_all
@@ -54,7 +55,7 @@ if __name__ == "__main__":  # only execute if main file executed
     if mode == "data":
         collect_all(client, exchange, symbol)
 
-    elif mode == "backtest":
+    elif mode in ["backtest", "optimize"]:
 
         ## Strategy
         available_strategies = ["obv", "ichimoku", "sup_res", "sma", "psar"]
@@ -109,4 +110,37 @@ if __name__ == "__main__":  # only execute if main file executed
             except ValueError:
                 continue
 
-        print(backtester.run(exchange, symbol, strategy, timeframe, from_time, to_time))
+        if mode == "backtest":
+            print(
+                backtester.run(
+                    exchange, symbol, strategy, timeframe, from_time, to_time
+                )
+            )
+
+        elif mode == "optimize":
+
+            # Population size
+            while True:
+                try:
+                    pop_size = int(input(f"Choose a population size: "))
+                    break
+                except ValueError:
+                    continue
+
+            # Iterations
+            while True:
+                try:
+                    generations = int(input(f"Choose a number of generations: "))
+                    break
+                except ValueError:
+                    continue
+
+            nsga2 = optimizer.Nsga2(
+                exchange=exchange,
+                symbol=symbol,
+                strategy=strategy,
+                tf=timeframe,
+                from_time=from_time,
+                to_time=to_time,
+                population_size=pop_size,
+            )
